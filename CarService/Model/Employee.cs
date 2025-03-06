@@ -7,4 +7,6 @@ public class Employee
     public string SurName { get; set; }
     public string PhoneNumber { get; set; }
     public string Position { get; set; }
+    
+    public ICollection<RepairEmployee> RepairEmployees { get; set; }
 }

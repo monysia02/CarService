@@ -9,4 +9,7 @@ public class Car
     public string RegistrationNumber { get; set; }
     public string Vin { get; set; }
     public int Year { get; set; }
+    
+    public ICollection<CarCustomer> CarCustomers { get; set; }
+
 }
