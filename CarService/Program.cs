@@ -12,7 +12,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

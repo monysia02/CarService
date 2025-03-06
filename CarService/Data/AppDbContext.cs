@@ -1,9 +1,10 @@
 using CarService.Model;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
-namespace CarService.Data;
-
-public class ApplicationDbContext : DbContext
+namespace CarService.Data
+{
+    public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -105,3 +106,17 @@ public class ApplicationDbContext : DbContext
         }
     }
 
+    public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
+    {
+        public ApplicationDbContext CreateDbContext(string[] args)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+            optionsBuilder.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
+            return new ApplicationDbContext(optionsBuilder.Options);
+        }
+    }
+}
