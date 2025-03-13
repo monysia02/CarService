@@ -38,9 +38,9 @@ namespace CarService.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateCustomerAsync(Customer customer)
+        public async Task<IActionResult> UpdateCustomerAsync(UpdateCustomerDto updateCustomerDto)
         {
-            await _customerService.UpdateCustomerAsync(customer);
+            await _customerService.UpdateCustomerAsync(updateCustomerDto);
             return Ok();
         }
     }

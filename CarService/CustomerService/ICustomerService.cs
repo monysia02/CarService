@@ -8,5 +8,5 @@ public interface ICustomerService
     Task AddCustomerAsync(CreateCustomerDto customer);
     Task<ReadCustomerDto> GetCustomerAsync(Guid id);
     Task<IEnumerable<ReadCustomerDto>> GetCustomersAsync();
-    Task UpdateCustomerAsync(Customer customer);
+    Task UpdateCustomerAsync(UpdateCustomerDto customer);
 }

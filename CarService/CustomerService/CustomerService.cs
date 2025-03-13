@@ -33,7 +33,7 @@ public class CustomerService: ICustomerService
         var customer = await _conext.Customers.FindAsync(id);
         if (customer == null)
         {
-            return null;
+            throw new Exception("Customer not found");
         }
         return new ReadCustomerDto
         {
@@ -56,8 +56,16 @@ public class CustomerService: ICustomerService
         });
     }
     
-    public async Task UpdateCustomerAsync(Customer customer)
+    public async Task UpdateCustomerAsync(UpdateCustomerDto updateCustomerDto)
     {
+        var customer = await _conext.Customers.FindAsync(updateCustomerDto.CustomerId);
+        if (customer == null)
+        {
+            throw new Exception("Customer not found");
+        }
+        customer.Name = updateCustomerDto.Name;
+        customer.SurName = updateCustomerDto.SurName;
+        customer.PhoneNumber = updateCustomerDto.PhoneNumber;
         _conext.Customers.Update(customer);
         await _conext.SaveChangesAsync();
     }
