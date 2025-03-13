@@ -28,14 +28,32 @@ public class CustomerService: ICustomerService
         await _conext.SaveChangesAsync();
     }
     
-    public async Task<Customer> GetCustomerAsync(Guid id)
+    public async Task<ReadCustomerDto> GetCustomerAsync(Guid id)
     {
-        return await _conext.Customers.FindAsync(id);
+        var customer = await _conext.Customers.FindAsync(id);
+        if (customer == null)
+        {
+            return null;
+        }
+        return new ReadCustomerDto
+        {
+            Name = customer.Name,
+            SurName = customer.SurName,
+            PhoneNumber = customer.PhoneNumber,
+            CustomerId =  customer.Id
+        };
     }
     
-    public async Task<IEnumerable<Customer>> GetCustomersAsync()
+    public async Task<IEnumerable<ReadCustomerDto>> GetCustomersAsync()
     {
-        return await _conext.Customers.ToListAsync();
+        var customers = await _conext.Customers.ToListAsync();
+        return customers.Select(customer => new ReadCustomerDto
+        {
+            Name = customer.Name,
+            SurName = customer.SurName,
+            PhoneNumber = customer.PhoneNumber,
+            CustomerId =  customer.Id
+        });
     }
     
     public async Task UpdateCustomerAsync(Customer customer)

@@ -6,7 +6,7 @@ namespace CarService.CustomerService;
 public interface ICustomerService
 {
     Task AddCustomerAsync(CreateCustomerDto customer);
-    Task<Customer> GetCustomerAsync(Guid id);
-    Task<IEnumerable<Customer>> GetCustomersAsync();
+    Task<ReadCustomerDto> GetCustomerAsync(Guid id);
+    Task<IEnumerable<ReadCustomerDto>> GetCustomersAsync();
     Task UpdateCustomerAsync(Customer customer);
 }
