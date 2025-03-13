@@ -1,4 +1,5 @@
 using CarService.CustomerService;
+using CarService.DTOs.CustomerDto;
 using CarService.Model;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,9 +17,9 @@ namespace CarService.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddCustomerAsync(Customer customer)
+        public async Task<IActionResult> AddCustomerAsync(CreateCustomerDto createCustomerDto)
         {
-            await _customerService.AddCustomerAsync(customer);
+            await _customerService.AddCustomerAsync(createCustomerDto);
             return Ok();
         }
 
