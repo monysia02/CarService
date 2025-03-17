@@ -1,5 +1,6 @@
 using CarService.CustomerService;
 using CarService.Data;
+using CarService.Services.CarService;
 using CarService.Services.EmployeeService;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<ICarService, CarService.Services.CarService.CarService>();
     
     
 var app = builder.Build();

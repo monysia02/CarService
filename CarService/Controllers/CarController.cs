@@ -1,0 +1,46 @@
+using CarService.DTOs.CarDto;
+using CarService.Services.CarService;
+using Microsoft.AspNetCore.Mvc;
+
+namespace CarService.Controllers;
+
+
+[ApiController]
+[Route("api/[controller]")]
+public class CarController : ControllerBase
+{
+    private readonly ICarService _CarService;
+
+    public CarController(ICarService CarService)
+    {
+        _CarService = CarService;
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AddCarAsync(CreateCarDto createCarDto)
+    {
+        await _CarService.AddCarAsync(createCarDto);
+        return Ok();
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetCarAsync(Guid id)
+    {
+        var car = await _CarService.GetCarsAsync();
+        return Ok(car);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetCarsAsync()
+    {
+        var cars = await _CarService.GetCarsAsync();
+        return Ok(cars);
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> UpdateCarAsync(UpdateCarDto updateCarDto)
+    {
+        await _CarService.UpdateCarAsync(updateCarDto);
+        return Ok();
+    }
+}
