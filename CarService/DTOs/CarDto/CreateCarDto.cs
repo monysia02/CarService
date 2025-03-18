@@ -2,7 +2,7 @@ namespace CarService.DTOs.CarDto;
 
 public class CreateCarDto
 {
-    public List<Guid> CustomerId { get; set; }
+    public List<Guid> CustomerIds { get; set; } = new List<Guid>();
     public string Brand { get; set; }
     public string Model { get; set; }
     public string RegistrationNumber { get; set; }
