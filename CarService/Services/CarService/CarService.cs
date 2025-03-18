@@ -1,78 +1,111 @@
+using CarService.CarService;
 using CarService.Data;
 using CarService.DTOs.CarDto;
+using CarService.DTOs.CustomerDto;
 using CarService.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace CarService.Services.CarService;
-
-public class CarService : ICarService
+namespace CarService.Services.CarService
 {
-    private readonly ApplicationDbContext _conext;
-
-    public CarService(ApplicationDbContext context)
+    public class CarService : ICarService
     {
-        _conext = context;
-    }
+        private readonly ApplicationDbContext _context;
 
-    public async Task AddCarAsync(CreateCarDto Car)
-    {
-        var car = new Car
+        public CarService(ApplicationDbContext context)
         {
-            Id = Guid.NewGuid(),
-            Brand = Car.Brand,
-            Model = Car.Model,
-            Year = Car.Year,
-            Vin = Car.Vin,
-            RegistrationNumber = Car.RegistrationNumber,
-            CarCustomers = new List<CarCustomer>()
-        };
-    }
-
-    public async Task<ReadCarDto> GetCarAsync(Guid id)
-    {
-        var car = await _conext.Cars.FindAsync(id);
-        if (car == null)
-        {
-            throw new Exception("Car not found");
+            _context = context;
         }
 
-        return new ReadCarDto()
+        public async Task AddCarAsync(CreateCarDto carDto)
         {
-            CarId = car.Id,
-            Brand = car.Brand,
-            Model = car.Model,
-            Year = car.Year,
-            Vin = car.Vin,
-            RegistrationNumber = car.RegistrationNumber
-        };
-    }
-
-    public async Task<IEnumerable<ReadCarDto>> GetCarsAsync()
-    {
-        var cars = await _conext.Cars.ToListAsync();
-        return cars.Select(car => new ReadCarDto
-        {
-            CarId = car.Id,
-            Brand = car.Brand,
-            Model = car.Model,
-            Year = car.Year,
-            Vin = car.Vin,
-            RegistrationNumber = car.RegistrationNumber
-        });
-    }
-
-    public async Task UpdateCarAsync(UpdateCarDto updateCarDto)
-    {
-        var car = await _conext.Cars.FindAsync(updateCarDto.CarId);
-        if (car == null)
-        {
-            throw new Exception("Car not found");
+            var createdCarGuid = Guid.NewGuid();    
+            
+            var car = new Car
+            {
+                Id = createdCarGuid,
+                Brand = carDto.Brand,
+                Model = carDto.Model,
+                Year = carDto.Year,
+                Vin = carDto.Vin,
+                RegistrationNumber = carDto.RegistrationNumber,
+                CarCustomers = carDto.CustomerIds.Select(customerId => new CarCustomer
+                {
+                    CustomerId = customerId,
+                    CarId = createdCarGuid
+                }).ToList()
+            };
+            _context.Cars.Add(car);
+            await _context.SaveChangesAsync();
         }
-        car.Brand = updateCarDto.Brand;
-        car.Model = updateCarDto.Model;
-        car.Year = updateCarDto.Year;
-        car.Vin = updateCarDto.Vin;
-        car.RegistrationNumber = updateCarDto.RegistrationNumber;
-        await _conext.SaveChangesAsync();
+
+        public async Task<ReadCarDto> GetCarAsync(Guid id)
+        {
+            var car = await _context.Cars
+                .Include(c => c.CarCustomers)
+                    .ThenInclude(cc => cc.Customer)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (car == null)
+            {
+                throw new Exception("Car not found");
+            }
+
+            return new ReadCarDto
+            {
+                CarId = car.Id,
+                Brand = car.Brand,
+                Model = car.Model,
+                Year = car.Year,
+                Vin = car.Vin,
+                RegistrationNumber = car.RegistrationNumber,
+                Customers = car.CarCustomers.Select(cc => new ReadCustomerDto
+                {
+                    CustomerId = cc.Customer.Id,
+                    Name = cc.Customer.Name,
+                    SurName = cc.Customer.SurName,
+                    PhoneNumber = cc.Customer.PhoneNumber
+                }).ToList()
+            };
+        }
+
+        public async Task<IEnumerable<ReadCarDto>> GetCarsAsync()
+        {
+            var cars = await _context.Cars
+                .Include(c => c.CarCustomers)
+                    .ThenInclude(cc => cc.Customer)
+                .ToListAsync();
+
+            return cars.Select(car => new ReadCarDto
+            {
+                CarId = car.Id,
+                Brand = car.Brand,
+                Model = car.Model,
+                Year = car.Year,
+                Vin = car.Vin,
+                RegistrationNumber = car.RegistrationNumber,
+                Customers = car.CarCustomers.Select(cc => new ReadCustomerDto
+                {
+                    CustomerId = cc.Customer.Id,
+                    Name = cc.Customer.Name,
+                    SurName = cc.Customer.SurName,
+                    PhoneNumber = cc.Customer.PhoneNumber
+                }).ToList()
+            });
+        }
+
+        public async Task UpdateCarAsync(UpdateCarDto updateCarDto)
+        {
+            var car = await _context.Cars.FindAsync(updateCarDto.CarId);
+            if (car == null)
+            {
+                throw new Exception("Car not found");
+            }
+            car.Brand = updateCarDto.Brand;
+            car.Model = updateCarDto.Model;
+            car.Year = updateCarDto.Year;
+            car.Vin = updateCarDto.Vin;
+            car.RegistrationNumber = updateCarDto.RegistrationNumber;
+            await _context.SaveChangesAsync();
+        }
     }
 }

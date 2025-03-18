@@ -1,9 +1,10 @@
 using CarService.Data;
 using CarService.DTOs.EmployeeDto;
 using CarService.Model;
+using CarService.Services.EmployeeService;
 using Microsoft.EntityFrameworkCore;
 
-namespace CarService.Services.EmployeeService;
+namespace CarService.EmployeeService;
 
 public class EmployeeService : IEmployeeService
 {

@@ -1,6 +1,6 @@
 using CarService.DTOs.CarDto;
 
-namespace CarService.Services.CarService;
+namespace CarService.CarService;
 
 public interface ICarService
 {
