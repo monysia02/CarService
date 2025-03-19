@@ -1,4 +1,5 @@
 using CarService.DTOs.RepairDto;
+using CarService.Enums;
 using CarService.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,6 +42,13 @@ public class RepairController : ControllerBase
     public async Task<IActionResult> UpdateRepairAsync(UpdateRepairDto updateRepairDto)
     {
         await _RepairService.UpdateRepairAsync(updateRepairDto);
+        return Ok();
+    }
+
+    [HttpPatch]
+    public async Task<IActionResult> UpdateRepairStatusAsync(Guid repairId, RepairStatusEnum status)
+    {
+        await _RepairService.UpdateRepairStatusAsync(repairId, status);
         return Ok();
     }
 }

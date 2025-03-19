@@ -57,7 +57,6 @@ namespace CarService.Services
                 RepairId = repair.Id,
                 CreatedAt = repair.CreatedAt,
                 FinishedAt = repair.FinishedAt,
-                CarId = repair.CarId,
                 Car = repair.Car == null ? null : new ReadCarDto
                 {
                     CarId = repair.Car.Id,
@@ -94,7 +93,6 @@ namespace CarService.Services
                 RepairId = repair.Id,
                 CreatedAt = repair.CreatedAt,
                 FinishedAt = repair.FinishedAt,
-                CarId = repair.CarId,
                 Car = repair.Car == null ? null : new ReadCarDto
                 {
                     CarId = repair.Car.Id,
@@ -130,7 +128,6 @@ namespace CarService.Services
             }
 
             repair.Description = updateRepairDto.Description;
-            repair.Status = updateRepairDto.Status;
             repair.FinishedAt = updateRepairDto.FinishedAt.HasValue
                 ? updateRepairDto.FinishedAt.Value.ToUniversalTime()
                 : null;
@@ -142,6 +139,17 @@ namespace CarService.Services
                     EmployeeId = employeeId
                 }).ToList();
 
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateRepairStatusAsync(Guid repairId, RepairStatusEnum status)
+        {
+            var repair = await _context.Repairs.FindAsync(repairId);
+            if (repair == null)
+            {
+                throw new Exception("Repair not found");
+            }
+            repair.Status =  status;
             await _context.SaveChangesAsync();
         }
     }
