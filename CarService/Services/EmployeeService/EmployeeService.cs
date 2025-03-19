@@ -52,12 +52,12 @@ public class EmployeeService : IEmployeeService
         };
     }
 
-    public async Task<IEnumerable<ReadEmployeeDto>> GetEmployeesAsync(SieveModel sieveModel)
+    public async Task<PaginatedResponse<ReadEmployeeDto>> GetEmployeesAsync(SieveModel sieveModel)
     {
         var query = _context.Employees.AsQueryable();
         query = _sieveProcessor.Apply(sieveModel, query);
         var employees = await query.ToListAsync();
-        return employees.Select(employee => new ReadEmployeeDto
+        var employeeDtos = employees.Select(employee => new ReadEmployeeDto
         {
             EmployeeId = employee.Id,
             Name = employee.Name,
@@ -65,6 +65,14 @@ public class EmployeeService : IEmployeeService
             PhoneNumber = employee.PhoneNumber,
             Position = employee.Position,
         });
+
+        return new PaginatedResponse<ReadEmployeeDto>
+        {
+            Data = employeeDtos,
+            CurrentPage = sieveModel.Page ?? 1,
+            PageSize = sieveModel.PageSize ?? 10,
+            TotalCount = await query.CountAsync()
+        };
     }
 
     public async Task UpdateEmployeeAsync(UpdateEmployeeDto updateEmployeeDto)
