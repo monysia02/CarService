@@ -1,8 +1,8 @@
 using CarService.DTOs.RepairDto;
-using CarService.Services.RepairService;
+using CarService.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace RepairService.Controllers;
+namespace CarService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

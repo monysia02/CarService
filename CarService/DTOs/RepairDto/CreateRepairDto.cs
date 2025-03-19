@@ -9,5 +9,5 @@ public class CreateRepairDto
     public string Description { get; set; } 
     public RepairStatusEnum Status { get; set; } 
     //public decimal Price { get; set; } //?
-    public DateTime FinishedAt { get; set; } 
+    // public DateTime FinishedAt { get; set; } 
 }

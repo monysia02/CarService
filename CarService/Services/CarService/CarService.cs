@@ -5,7 +5,7 @@ using CarService.DTOs.CustomerDto;
 using CarService.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace CarService.Services.CarService
+namespace CarService.Services
 {
     public class CarService : ICarService
     {

@@ -1,7 +1,6 @@
 using CarService.DTOs.RepairDto;
 
-namespace CarService.Services.RepairService;
-
+namespace CarService.Services;
 public interface IRepairService
 {
     Task AddRepairAsync(CreateRepairDto repair);
