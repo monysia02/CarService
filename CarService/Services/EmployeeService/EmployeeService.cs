@@ -56,7 +56,7 @@ public class EmployeeService : IEmployeeService
     {
         var query = _context.Employees.AsQueryable();
         query = _sieveProcessor.Apply(sieveModel, query);
-        var employees = await _context.Employees.ToListAsync();
+        var employees = await query.ToListAsync();
         return employees.Select(employee => new ReadEmployeeDto
         {
             EmployeeId = employee.Id,
