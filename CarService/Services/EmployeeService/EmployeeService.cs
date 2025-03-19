@@ -3,16 +3,20 @@ using CarService.DTOs.EmployeeDto;
 using CarService.Model;
 using CarService.Services.EmployeeService;
 using Microsoft.EntityFrameworkCore;
+using Sieve.Models;
+using Sieve.Services;
 
 namespace CarService.EmployeeService;
 
 public class EmployeeService : IEmployeeService
 {
     private readonly ApplicationDbContext _context;
+    private readonly SieveProcessor _sieveProcessor;
 
-    public EmployeeService(ApplicationDbContext context)
+    public EmployeeService(ApplicationDbContext context, SieveProcessor sieveProcessor)
     {
         _context = context;
+        _sieveProcessor = sieveProcessor;
     }
 
     public async Task AddEmployeeAsync(CreateEmployeeDto Employee)
@@ -48,8 +52,10 @@ public class EmployeeService : IEmployeeService
         };
     }
 
-    public async Task<IEnumerable<ReadEmployeeDto>> GetEmployeesAsync()
+    public async Task<IEnumerable<ReadEmployeeDto>> GetEmployeesAsync(SieveModel sieveModel)
     {
+        var query = _context.Employees.AsQueryable();
+        query = _sieveProcessor.Apply(sieveModel, query);
         var employees = await _context.Employees.ToListAsync();
         return employees.Select(employee => new ReadEmployeeDto
         {
