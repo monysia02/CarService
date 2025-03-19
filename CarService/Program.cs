@@ -3,6 +3,7 @@ using CarService.CarService;
 using CarService.CustomerService;
 using CarService.Data;
 using CarService.EmployeeService;
+using CarService.Services;
 using CarService.Services.EmployeeService;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,7 +18,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
-builder.Services.AddScoped<ICarService, CarService.Services.CarService.CarService>();
+builder.Services.AddScoped<ICarService, CarService.Services.CarService>(); 
+builder.Services.AddScoped<IRepairService, RepairService>();
     
     
 var app = builder.Build();
