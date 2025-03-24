@@ -2,6 +2,7 @@ using CarService.CustomerService;
 using CarService.DTOs.CustomerDto;
 using CarService.Model;
 using Microsoft.AspNetCore.Mvc;
+using Sieve.Models;
 
 namespace CarService.Controllers
 {
@@ -31,9 +32,9 @@ namespace CarService.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCustomersAsync()
+        public async Task<IActionResult> GetCustomersAsync([FromQuery] SieveModel sieveModel)
         {
-            var customers = await _customerService.GetCustomersAsync();
+            var customers = await _customerService.GetCustomersAsync(sieveModel);
             return Ok(customers);
         }
 

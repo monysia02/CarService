@@ -1,6 +1,7 @@
 using CarService.DTOs.EmployeeDto;
 using CarService.Services.EmployeeService;
 using Microsoft.AspNetCore.Mvc;
+using Sieve.Models;
 
 namespace CarService.Controllers;
 
@@ -30,9 +31,9 @@ namespace CarService.Controllers;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetEmployeesAsync()
+        public async Task<IActionResult> GetEmployeesAsync([FromQuery] SieveModel sieveModel)
         {
-            var Employees = await _EmployeeService.GetEmployeesAsync();
+            var Employees = await _EmployeeService.GetEmployeesAsync(sieveModel);
             return Ok(Employees);
         }
 

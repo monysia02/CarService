@@ -2,16 +2,20 @@ using CarService.Data;
 using CarService.DTOs.CustomerDto;
 using CarService.Model;
 using Microsoft.EntityFrameworkCore;
+using Sieve.Models;
+using Sieve.Services;
 
 namespace CarService.CustomerService;
 
 public class CustomerService: ICustomerService
 {
     private readonly ApplicationDbContext _conext;
+    private readonly SieveProcessor _sieveProcessor;
     
-    public CustomerService(ApplicationDbContext context)
+    public CustomerService(ApplicationDbContext context,  SieveProcessor sieveProcessor)
     {
         _conext = context;
+        _sieveProcessor = sieveProcessor;
     }
     
     public async Task AddCustomerAsync(CreateCustomerDto createCustomerDto)
@@ -44,16 +48,25 @@ public class CustomerService: ICustomerService
         };
     }
     
-    public async Task<IEnumerable<ReadCustomerDto>> GetCustomersAsync()
+    public async Task<PaginatedResponse<ReadCustomerDto>> GetCustomersAsync(SieveModel sieveModel)
     {
-        var customers = await _conext.Customers.ToListAsync();
-        return customers.Select(customer => new ReadCustomerDto
+        var query = _conext.Customers.AsQueryable();
+        query = _sieveProcessor.Apply(sieveModel, query);
+        var customers = await query.ToListAsync();
+        var customersDtos = customers.Select(customer => new ReadCustomerDto
         {
             Name = customer.Name,
             SurName = customer.SurName,
             PhoneNumber = customer.PhoneNumber,
             CustomerId =  customer.Id
         });
+        return new PaginatedResponse<ReadCustomerDto>
+        {
+            Data = customersDtos,
+            CurrentPage = sieveModel.Page ?? 1,
+            PageSize = sieveModel.PageSize ?? 10,
+            TotalCount = await query.CountAsync()
+        };
     }
     
     public async Task UpdateCustomerAsync(UpdateCustomerDto updateCustomerDto)

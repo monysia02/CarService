@@ -6,6 +6,7 @@ using CarService.EmployeeService;
 using CarService.Services;
 using CarService.Services.EmployeeService;
 using Microsoft.EntityFrameworkCore;
+using Sieve.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,7 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<ICarService, CarService.Services.CarService>(); 
 builder.Services.AddScoped<IRepairService, RepairService>();
+builder.Services.AddScoped<SieveProcessor>();
     
     
 var app = builder.Build();

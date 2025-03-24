@@ -4,16 +4,20 @@ using CarService.DTOs.CarDto;
 using CarService.DTOs.CustomerDto;
 using CarService.Model;
 using Microsoft.EntityFrameworkCore;
+using Sieve.Models;
+using Sieve.Services;
 
 namespace CarService.Services
 {
     public class CarService : ICarService
     {
         private readonly ApplicationDbContext _context;
+        private readonly SieveProcessor _sieveProcessor;
 
-        public CarService(ApplicationDbContext context)
+        public CarService(ApplicationDbContext context, SieveProcessor sieveProcessor)
         {
             _context = context;
+            _sieveProcessor = sieveProcessor;
         }
 
         public async Task AddCarAsync(CreateCarDto carDto)
@@ -68,14 +72,16 @@ namespace CarService.Services
             };
         }
 
-        public async Task<IEnumerable<ReadCarDto>> GetCarsAsync()
+        public async Task<PaginatedResponse<ReadCarDto>> GetCarsAsync(SieveModel sieveModel)
         {
-            var cars = await _context.Cars
+            var query =  _context.Cars.AsQueryable();
+            query = _sieveProcessor.Apply(sieveModel, query);
+            var cars = await query
                 .Include(c => c.CarCustomers)
                     .ThenInclude(cc => cc.Customer)
                 .ToListAsync();
 
-            return cars.Select(car => new ReadCarDto
+            var carsDtos = cars.Select(car => new ReadCarDto
             {
                 CarId = car.Id,
                 Brand = car.Brand,
@@ -91,6 +97,14 @@ namespace CarService.Services
                     PhoneNumber = cc.Customer.PhoneNumber
                 }).ToList()
             });
+
+            return new PaginatedResponse<ReadCarDto>
+            {
+                Data = carsDtos,
+                CurrentPage = sieveModel.Page ?? 1,
+                PageSize = sieveModel.PageSize ?? 10,
+                TotalCount = await query.CountAsync()
+            };
         }
 
         public async Task UpdateCarAsync(UpdateCarDto updateCarDto)
