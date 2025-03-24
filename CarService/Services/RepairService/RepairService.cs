@@ -5,16 +5,20 @@ using CarService.DTOs.RepairDto;
 using CarService.Enums;
 using CarService.Model;
 using Microsoft.EntityFrameworkCore;
+using Sieve.Models;
+using Sieve.Services;
 
 namespace CarService.Services
 {
     public class RepairService : IRepairService
     {
         private readonly ApplicationDbContext _context;
+        private readonly SieveProcessor  _sieveProcessor;
 
-        public RepairService(ApplicationDbContext context)
+        public RepairService(ApplicationDbContext context,  SieveProcessor sieveProcessor)
         {
             _context = context;
+            _sieveProcessor = sieveProcessor;
         }
 
         public async Task AddRepairAsync(CreateRepairDto repairDto)
@@ -80,15 +84,17 @@ namespace CarService.Services
             };
         }
 
-        public async Task<IEnumerable<ReadRepairDto>> GetRepairsAsync()
+        public async Task<PaginatedResponse<ReadRepairDto>> GetRepairsAsync(SieveModel sieveModel)
         {
-            var repairs = await _context.Repairs
-                .Include(r => r.Car)  // Dołączamy powiązany samochód
+            var query =  _context.Repairs.AsQueryable();
+            query = _sieveProcessor.Apply(sieveModel, query);
+            var repairs = await query
+                .Include(r => r.Car)  
                 .Include(r => r.RepairEmployees)
                     .ThenInclude(re => re.Employee)
                 .ToListAsync();
 
-            return repairs.Select(repair => new ReadRepairDto
+            var repairsDtos = repairs.Select(repair => new ReadRepairDto
             {
                 RepairId = repair.Id,
                 CreatedAt = repair.CreatedAt,
@@ -114,6 +120,13 @@ namespace CarService.Services
                     Position = e.Employee.Position
                 }).ToList()
             });
+            return new PaginatedResponse<ReadRepairDto>
+            {
+                Data = repairsDtos,
+                CurrentPage = sieveModel.Page ?? 1,
+                PageSize = sieveModel.PageSize ?? 10,
+                TotalCount = await query.CountAsync()
+            };
         }
 
         public async Task UpdateRepairAsync(UpdateRepairDto updateRepairDto)

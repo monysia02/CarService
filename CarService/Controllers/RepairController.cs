@@ -2,6 +2,7 @@ using CarService.DTOs.RepairDto;
 using CarService.Enums;
 using CarService.Services;
 using Microsoft.AspNetCore.Mvc;
+using Sieve.Models;
 
 namespace CarService.Controllers;
 
@@ -27,14 +28,14 @@ public class RepairController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetRepairAsync(Guid id)
     {
-        var Repair = await _RepairService.GetRepairsAsync();
+        var Repair = await _RepairService.GetRepairAsync(id);
         return Ok(Repair);
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetRepairsAsync()
+    public async Task<IActionResult> GetRepairsAsync([FromQuery] SieveModel sieveModel)
     {
-        var Repairs = await _RepairService.GetRepairsAsync();
+        var Repairs = await _RepairService.GetRepairsAsync(sieveModel);
         return Ok(Repairs);
     }
 
