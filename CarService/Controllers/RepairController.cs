@@ -1,6 +1,7 @@
 using CarService.DTOs.RepairDto;
 using CarService.Enums;
 using CarService.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 
@@ -8,10 +9,11 @@ namespace CarService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-
 public class RepairController : ControllerBase
 {
+    private readonly IValidator<CreateRepairDto> _createRepairValidator;
     private readonly IRepairService _RepairService;
+    private readonly IValidator<UpdateRepairDto> _updateRepairValidator;
 
     public RepairController(IRepairService RepairService)
     {
@@ -21,6 +23,9 @@ public class RepairController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AddRepairAsync(CreateRepairDto createRepairDto)
     {
+        var validationResult = await _createRepairValidator.ValidateAsync(createRepairDto);
+        if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
+
         await _RepairService.AddRepairAsync(createRepairDto);
         return Ok();
     }
@@ -42,6 +47,9 @@ public class RepairController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> UpdateRepairAsync(UpdateRepairDto updateRepairDto)
     {
+        var validationResult = await _updateRepairValidator.ValidateAsync(updateRepairDto);
+        if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
+
         await _RepairService.UpdateRepairAsync(updateRepairDto);
         return Ok();
     }

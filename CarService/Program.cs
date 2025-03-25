@@ -1,11 +1,17 @@
 using CarService.CarService;
 using CarService.CustomerService;
 using CarService.Data;
+using CarService.DTOs.CarDto;
 using CarService.DTOs.CustomerDto;
+using CarService.DTOs.EmployeeDto;
+using CarService.DTOs.RepairDto;
 using CarService.EmployeeService;
 using CarService.Services;
 using CarService.Services.EmployeeService;
+using CarService.Utilities.Validators.Car;
 using CarService.Utilities.Validators.Customer;
+using CarService.Utilities.Validators.Employee;
+using CarService.Utilities.Validators.Repair;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Sieve.Services;
@@ -22,6 +28,14 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IValidator<CreateCustomerDto>, CustomerCreateValidator>();
 builder.Services.AddScoped<IValidator<UpdateCustomerDto>, CustomerUpdateValidator>();
+builder.Services.AddScoped<IValidator<CreateEmployeeDto>, EmployeeCreateValidator>();
+builder.Services.AddScoped<IValidator<UpdateEmployeeDto>, EmployeeUpdateValidator>();
+
+builder.Services.AddScoped<IValidator<CreateRepairDto>, RepairCreateValidator>();
+builder.Services.AddScoped<IValidator<UpdateRepairDto>, RepairUpdateValidator>();
+
+builder.Services.AddScoped<IValidator<CreateCarDto>, CarCreateValidator>();
+builder.Services.AddScoped<IValidator<UpdateCarDto>, CarUpdateValidator>();
 
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
