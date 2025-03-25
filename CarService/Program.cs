@@ -1,10 +1,12 @@
-
 using CarService.CarService;
 using CarService.CustomerService;
 using CarService.Data;
+using CarService.DTOs.CustomerDto;
 using CarService.EmployeeService;
 using CarService.Services;
 using CarService.Services.EmployeeService;
+using CarService.Utilities.Validators.Customer;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Sieve.Services;
 
@@ -17,13 +19,17 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IValidator<CreateCustomerDto>, CustomerCreateValidator>();
+builder.Services.AddScoped<IValidator<UpdateCustomerDto>, CustomerUpdateValidator>();
+
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
-builder.Services.AddScoped<ICarService, CarService.Services.CarService>(); 
+builder.Services.AddScoped<ICarService, CarService.Services.CarService>();
 builder.Services.AddScoped<IRepairService, RepairService>();
 builder.Services.AddScoped<SieveProcessor>();
-    
-    
+
+
 var app = builder.Build();
 
 
@@ -32,6 +38,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.MapControllers();
 app.UseHttpsRedirection();
 
