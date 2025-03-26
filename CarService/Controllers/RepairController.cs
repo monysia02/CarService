@@ -15,8 +15,11 @@ public class RepairController : ControllerBase
     private readonly IRepairService _RepairService;
     private readonly IValidator<UpdateRepairDto> _updateRepairValidator;
 
-    public RepairController(IRepairService RepairService)
+    public RepairController(IRepairService RepairService, IValidator<CreateRepairDto> createRepairValidator,
+        IValidator<UpdateRepairDto> updateRepairValidator)
     {
+        _createRepairValidator = createRepairValidator;
+        _updateRepairValidator = updateRepairValidator;
         _RepairService = RepairService;
     }
 

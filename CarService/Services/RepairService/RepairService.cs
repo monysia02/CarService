@@ -164,7 +164,14 @@ public class RepairService : IRepairService
     public async Task UpdateRepairStatusAsync(Guid repairId, RepairStatusEnum status)
     {
         var repair = await _context.Repairs.FindAsync(repairId);
+        
         if (repair == null) throw new Exception("Repair not found");
+        
+        if (status == RepairStatusEnum.Finished || status == RepairStatusEnum.Cancelled)
+        {
+            if (repair.FinishedAt == null) repair.FinishedAt = DateTime.UtcNow;
+        }
+        
         repair.Status = status;
         await _context.SaveChangesAsync();
     }
