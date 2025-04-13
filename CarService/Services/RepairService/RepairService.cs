@@ -147,16 +147,8 @@ public class RepairService : IRepairService
         if (repair == null) throw new Exception("Repair not found");
 
         repair.Description = updateRepairDto.Description;
-        repair.FinishedAt = updateRepairDto.FinishedAt.HasValue
-            ? updateRepairDto.FinishedAt.Value.ToUniversalTime()
-            : null;
+        repair.Status = updateRepairDto.Status;
 
-        repair.RepairEmployees = updateRepairDto.EmployeeIds
-            .Select(employeeId => new RepairEmployee
-            {
-                RepairId = repair.Id,
-                EmployeeId = employeeId
-            }).ToList();
 
         await _context.SaveChangesAsync();
     }
@@ -164,15 +156,39 @@ public class RepairService : IRepairService
     public async Task UpdateRepairStatusAsync(Guid repairId, RepairStatusEnum status)
     {
         var repair = await _context.Repairs.FindAsync(repairId);
-        
+
         if (repair == null) throw new Exception("Repair not found");
-        
+
         if (status == RepairStatusEnum.Finished || status == RepairStatusEnum.Cancelled)
-        {
-            if (repair.FinishedAt == null) repair.FinishedAt = DateTime.UtcNow;
-        }
-        
+            if (repair.FinishedAt == null)
+                repair.FinishedAt = DateTime.UtcNow;
+
         repair.Status = status;
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task CancelRepairAsync(Guid repairId)
+    {
+        var repair = await _context.Repairs.FindAsync(repairId);
+        if (repair == null)
+            throw new Exception("Repair not found");
+
+        repair.Status = RepairStatusEnum.Cancelled;
+        repair.FinishedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task FinishRepairAsync(Guid repairId, decimal finalPrice)
+    {
+        var repair = await _context.Repairs.FindAsync(repairId);
+        if (repair == null)
+            throw new Exception("Repair not found");
+
+        repair.Status = RepairStatusEnum.Finished;
+        repair.FinishedAt = DateTime.UtcNow;
+        repair.Price = finalPrice;
+
         await _context.SaveChangesAsync();
     }
 }

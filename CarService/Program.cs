@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using CarService.CarService;
 using CarService.CustomerService;
 using CarService.Data;
@@ -21,6 +22,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

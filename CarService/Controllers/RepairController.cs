@@ -1,26 +1,25 @@
 using CarService.DTOs.RepairDto;
-using CarService.Enums;
 using CarService.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
-
-namespace CarService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class RepairController : ControllerBase
 {
     private readonly IValidator<CreateRepairDto> _createRepairValidator;
-    private readonly IRepairService _RepairService;
+    private readonly IRepairService _repairService;
     private readonly IValidator<UpdateRepairDto> _updateRepairValidator;
 
-    public RepairController(IRepairService RepairService, IValidator<CreateRepairDto> createRepairValidator,
+    public RepairController(
+        IRepairService repairService,
+        IValidator<CreateRepairDto> createRepairValidator,
         IValidator<UpdateRepairDto> updateRepairValidator)
     {
         _createRepairValidator = createRepairValidator;
         _updateRepairValidator = updateRepairValidator;
-        _RepairService = RepairService;
+        _repairService = repairService;
     }
 
     [HttpPost]
@@ -29,38 +28,46 @@ public class RepairController : ControllerBase
         var validationResult = await _createRepairValidator.ValidateAsync(createRepairDto);
         if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
 
-        await _RepairService.AddRepairAsync(createRepairDto);
+        await _repairService.AddRepairAsync(createRepairDto);
         return Ok();
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetRepairAsync(Guid id)
     {
-        var Repair = await _RepairService.GetRepairAsync(id);
-        return Ok(Repair);
+        var repair = await _repairService.GetRepairAsync(id);
+        return Ok(repair);
     }
 
     [HttpGet]
     public async Task<IActionResult> GetRepairsAsync([FromQuery] SieveModel sieveModel)
     {
-        var Repairs = await _RepairService.GetRepairsAsync(sieveModel);
-        return Ok(Repairs);
+        var repairs = await _repairService.GetRepairsAsync(sieveModel);
+        return Ok(repairs);
     }
 
     [HttpPut]
-    public async Task<IActionResult> UpdateRepairAsync(UpdateRepairDto updateRepairDto)
+    public async Task<IActionResult> UpdateRepairAsync([FromBody] UpdateRepairDto updateRepairDto)
     {
         var validationResult = await _updateRepairValidator.ValidateAsync(updateRepairDto);
-        if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult.Errors);
 
-        await _RepairService.UpdateRepairAsync(updateRepairDto);
+        await _repairService.UpdateRepairAsync(updateRepairDto);
         return Ok();
     }
 
-    [HttpPatch]
-    public async Task<IActionResult> UpdateRepairStatusAsync(Guid repairId, RepairStatusEnum status)
+    [HttpPatch("cancelRepair")]
+    public async Task<IActionResult> CancelRepairAsync([FromQuery] Guid repairId)
     {
-        await _RepairService.UpdateRepairStatusAsync(repairId, status);
+        await _repairService.CancelRepairAsync(repairId);
+        return Ok();
+    }
+
+    [HttpPatch("finishRepair")]
+    public async Task<IActionResult> FinishRepairAsync([FromQuery] Guid repairId, [FromQuery] decimal finalPrice)
+    {
+        await _repairService.FinishRepairAsync(repairId, finalPrice);
         return Ok();
     }
 }
