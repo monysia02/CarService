@@ -40,3 +40,28 @@ System Zarządzania Warsztatem Samochodowym to aplikacja umożliwiająca efektyw
 - Dokumentacja API powinna być dostępna przez Swagger UI.
 - System powinien działać w przeglądarkach: Chrome, Firefox, Edge (najnowsze wersje).
 - System powinien być zgodny z RODO w zakresie przechowywania danych klientów.
+
+## Wymagania  
+  
+Przed rozpoczęciem upewnij się, że masz zainstalowane następujące narzędzia:  
+- [Docker](https://www.docker.com/) i [Docker Compose](https://docs.docker.com/compose/),  
+- [SDK .NET 9.0](https://dotnet.microsoft.com/) (opcjonalnie, jeśli chcesz uruchamiać aplikację lokalnie bez Dockera).  
+
+2. Uruchom aplikację za pomocą Docker Compose:
+
+Docker Compose automatycznie uruchomi aplikację backendową oraz bazę PostgreSQL. Wystarczy wykonać polecenie:
+
+
+docker-compose up --build  
+Aplikacja backendowa będzie dostępna pod adresem: http://localhost:5000.
+
+3. Zarządzanie kontenerami:
+
+Aby zatrzymać kontenery, użyj:
+
+
+docker-compose down  
+Aby uruchomić kontenery w tle (w trybie detached), użyj:
+
+
+docker-compose up -d 
