@@ -13,6 +13,21 @@ services:
     networks:
       - my_network
 
+  webapi:
+    build:
+      context: ./CarService
+      dockerfile: Dockerfile
+    container_name: car_service_api
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=mydb;Username=myuser;Password=mypassword
+    networks:
+      - my_network
+
 networks:
   my_network:
     driver: bridge
